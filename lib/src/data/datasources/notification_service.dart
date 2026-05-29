@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -11,6 +12,7 @@ class NotificationService {
 
   /// Initializes the notification system, requests permissions, and configures channels.
   Future<void> init() async {
+    if (kIsWeb) return;
     // Initialize timezone database
     tz.initializeTimeZones();
 
@@ -43,11 +45,13 @@ class NotificationService {
 
   /// Cancels all active and scheduled notifications.
   Future<void> cancelAll() async {
+    if (kIsWeb) return;
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
   /// Cancels only the active/future spam notifications (e.g. when app is opened).
   Future<void> cancelActiveSpams() async {
+    if (kIsWeb) return;
     // Standard prayer IDs are 0 to 5. Spam IDs are 100 to 130.
     for (int id = 100; id <= 130; id++) {
       await flutterLocalNotificationsPlugin.cancel(id);
@@ -61,6 +65,7 @@ class NotificationService {
     required PrayerSchedule schedule,
     required UserSettings settings,
   }) async {
+    if (kIsWeb) return;
     // First, clear previous notifications to avoid duplicate triggers
     await cancelAll();
 
@@ -122,6 +127,7 @@ class NotificationService {
     required String soundName,
     bool isCritical = false,
   }) async {
+    if (kIsWeb) return;
     final tzTime = tz.TZDateTime.from(scheduledDateTime, tz.local);
 
     // Android configuration

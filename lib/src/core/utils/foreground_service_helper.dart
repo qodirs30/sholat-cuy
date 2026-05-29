@@ -1,4 +1,5 @@
 import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 // The callback function that will be executed in the background isolate
@@ -31,6 +32,7 @@ class MyBackgroundTaskHandler extends TaskHandler {
 class ForegroundServiceHelper {
   /// Initializes the configurations for the Android Foreground Service
   static Future<void> initForegroundTask() async {
+    if (kIsWeb) return;
     FlutterForegroundTask.init(
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'sholat_cuy_foreground_channel',
@@ -54,6 +56,7 @@ class ForegroundServiceHelper {
 
   /// Starts the Foreground Service
   static Future<bool> startService() async {
+    if (kIsWeb) return false;
     if (await FlutterForegroundTask.isRunningService) {
       return true;
     }
@@ -75,6 +78,7 @@ class ForegroundServiceHelper {
 
   /// Stops the Foreground Service
   static Future<bool> stopService() async {
+    if (kIsWeb) return true;
     if (await FlutterForegroundTask.isRunningService) {
       final result = await FlutterForegroundTask.stopService();
       return result is ServiceRequestSuccess;
