@@ -52,8 +52,9 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
       child: SafeArea(
+        bottom: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0, bottom: 120.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -164,6 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     children: [
                       // Calculation Method dropdown
                       DropdownButtonFormField<String>(
+                        dropdownColor: isDark ? Colors.grey[900]?.withOpacity(0.95) : Colors.white.withOpacity(0.95),
                         decoration: const InputDecoration(
                           labelText: 'Metode Kalkulasi',
                           icon: Icon(Icons.calculate, color: AppColors.emeraldGreen),
@@ -187,6 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                       // Adzan Sound dropdown
                       DropdownButtonFormField<String>(
+                        dropdownColor: isDark ? Colors.grey[900]?.withOpacity(0.95) : Colors.white.withOpacity(0.95),
                         decoration: const InputDecoration(
                           labelText: 'Suara Alarm Adzan',
                           icon: Icon(Icons.volume_up, color: AppColors.emeraldGreen),
@@ -244,6 +247,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       const Divider(height: 15),
                       DropdownButtonFormField<String>(
+                        dropdownColor: isDark ? Colors.grey[900]?.withOpacity(0.95) : Colors.white.withOpacity(0.95),
                         decoration: const InputDecoration(
                           labelText: 'Bahasa Aplikasi',
                           icon: Icon(Icons.language, color: AppColors.emeraldGreen),

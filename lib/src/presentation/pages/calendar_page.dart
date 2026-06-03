@@ -29,8 +29,9 @@ class CalendarPage extends StatelessWidget {
         ),
       ),
       child: SafeArea(
+        bottom: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0, bottom: 120.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

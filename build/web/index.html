@@ -33,6 +33,40 @@
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <script>
+    // Web Audio and Notification Helper for SHOLAT cuy
+    window.playNotificationSound = function(soundName) {
+      try {
+        let audioPath = '';
+        if (soundName === 'adzan_1' || soundName === 'adzan_mekkah' || soundName.includes('adzan')) {
+          audioPath = 'assets/assets/sounds/adzan_mekkah.mp3';
+        } else if (soundName === 'beep') {
+          audioPath = 'assets/assets/sounds/beep.mp3';
+        } else {
+          return;
+        }
+        let audio = new Audio(audioPath);
+        audio.play().catch(e => console.log("Audio playback failed: ", e));
+      } catch(e) {
+        console.error(e);
+      }
+    };
+
+    window.showWebNotification = function(title, body) {
+      if (!("Notification" in window)) {
+        return;
+      }
+      if (Notification.permission === "granted") {
+        new Notification(title, { body: body, icon: 'favicon.png' });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(function (permission) {
+          if (permission === "granted") {
+            new Notification(title, { body: body, icon: 'favicon.png' });
+          }
+        });
+      }
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

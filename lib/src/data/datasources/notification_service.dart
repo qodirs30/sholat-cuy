@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import '../../core/utils/web_helper.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
@@ -187,5 +188,15 @@ class NotificationService {
       default:
         return 'silent';
     }
+  }
+
+  /// Plays sound and shows notification on Web using JS interop.
+  Future<void> triggerWebAlarm({
+    required String soundName,
+    required String title,
+    required String body,
+  }) async {
+    if (!kIsWeb) return;
+    triggerWebNotificationAndSound(soundName, title, body);
   }
 }

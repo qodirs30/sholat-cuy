@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../domain/entities/prayer_time.dart';
@@ -7,6 +8,7 @@ import '../../domain/usecases/prayer_usecases.dart';
 import '../../core/di/injection.dart';
 import '../../data/datasources/notification_service.dart';
 import '../../data/datasources/location_service.dart';
+import '../../data/datasources/local_ds.dart';
 
 class PrayerProvider with ChangeNotifier {
   final GetPrayerTimes getPrayerTimesUseCase;
@@ -118,11 +120,57 @@ class PrayerProvider with ChangeNotifier {
       _timeToNext = _nextPrayer!.time.difference(now);
 
       if (_timeToNext.isNegative || _timeToNext.inSeconds == 0) {
+        final isExactZero = _timeToNext.inSeconds == 0;
         // Prayer time arrived! Refresh active prayers
         _updateActivePrayers();
+        if (isExactZero) {
+          _triggerWebNotification();
+        }
       }
       notifyListeners();
     });
+  }
+
+  Future<void> _triggerWebNotification() async {
+    if (!kIsWeb) return;
+    try {
+      final settings = await sl<LocalDataSource>().getUserSettings();
+      if (_currentPrayer == null) return;
+
+      // Check if notifications are enabled for this specific prayer
+      final isEnabled = settings.notificationToggles[_currentPrayer!.type] ?? true;
+      if (!isEnabled) return;
+
+      final soundFile = _currentPrayer!.type == PrayerType.sunrise 
+          ? 'silent' 
+          : (settings.adzanSound == 'beep' ? 'beep' : 'adzan_mekkah');
+      if (soundFile == 'silent') return;
+
+      final title = 'Waktu ${_currentPrayer!.name} telah tiba!';
+      final body = 'Mari bersiap untuk menunaikan ibadah shalat ${_currentPrayer!.name}.';
+
+      // Trigger Web alarm
+      await sl<NotificationService>().triggerWebAlarm(
+        soundName: soundFile,
+        title: title,
+        body: body,
+      );
+
+      // If spam is enabled, trigger spam loop on Web
+      if (settings.spamEnabled) {
+        for (int i = 1; i <= 5; i++) {
+          Future.delayed(Duration(minutes: i * 2), () async {
+            await sl<NotificationService>().triggerWebAlarm(
+              soundName: soundFile,
+              title: 'Panggilan Shalat ${_currentPrayer!.name} (Spam Pengingat Ke-$i)',
+              body: 'Waktu shalat ${_currentPrayer!.name} sedang berlangsung. Ayo shalat!',
+            );
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('Error triggering web notification: $e');
+    }
   }
 
   @override

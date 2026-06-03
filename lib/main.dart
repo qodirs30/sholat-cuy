@@ -46,9 +46,11 @@ class MyApp extends StatelessWidget {
         builder: (context, settingsProvider, child) {
           if (settingsProvider.isLoading) {
             return const MaterialApp(
+              debugShowCheckedModeBanner: false,
               home: Scaffold(
+                backgroundColor: Colors.white,
                 body: Center(
-                  child: CircularProgressIndicator(),
+                  child: PulsingLogoLoader(),
                 ),
               ),
             );
@@ -63,6 +65,49 @@ class MyApp extends StatelessWidget {
             home: const AppShell(),
           );
         },
+      ),
+    );
+  }
+}
+
+class PulsingLogoLoader extends StatefulWidget {
+  const PulsingLogoLoader({Key? key}) : super(key: key);
+
+  @override
+  State<PulsingLogoLoader> createState() => _PulsingLogoLoaderState();
+}
+
+class _PulsingLogoLoaderState extends State<PulsingLogoLoader>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.85, end: 1.15).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _animation,
+      child: Image.asset(
+        'assets/images/logo.png',
+        width: 100,
+        height: 100,
       ),
     );
   }
