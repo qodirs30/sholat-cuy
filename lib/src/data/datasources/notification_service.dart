@@ -138,7 +138,7 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.high,
       playSound: soundName != 'silent',
-      sound: soundName != 'silent' && soundName != 'beep'
+      sound: soundName != 'silent'
           ? RawResourceAndroidNotificationSound(soundName)
           : null,
       fullScreenIntent: isCritical,
@@ -151,7 +151,7 @@ class NotificationService {
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
-      sound: soundName != 'silent' ? '$soundName.caf' : null,
+      sound: soundName != 'silent' ? '$soundName.mp3' : null,
       // Critical alerts config (can play sound even in silent mode)
       presentBanner: true,
       presentList: true,
